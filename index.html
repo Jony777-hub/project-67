@@ -5,51 +5,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IBprofen — Умная медсистема</title>
 <style>
-body{margin:0;font-family:sans-serif;background:#121212;color:#fff;transition:.3s;}
+/* --- Основные стили --- */
+body{margin:0;font-family:Arial,sans-serif;background:#0f0f15;color:#fff;transition:.3s;}
 .light-mode{background:#f5f5f5;color:#000;}
-header{display:flex;justify-content:space-between;align-items:center;padding:15px 30px;background:#1a1a1a;}
+header{display:flex;justify-content:space-between;align-items:center;padding:15px 30px;background:#1b1b27;box-shadow:0 0 10px rgba(0,255,255,0.2);}
 nav ul{display:flex;list-style:none;margin:0;padding:0;}
 nav li{margin-left:20px;}
-nav a{text-decoration:none;color:#c5c6c7;font-weight:bold;}
-nav a:hover{color:#66fcf1;}
-section{padding:20px;}
-input, select, textarea{padding:8px;margin:5px;border-radius:5px;border:none;width:200px;}
-button{padding:8px 12px;margin:5px;border:none;border-radius:5px;background:#66fcf1;color:#000;cursor:pointer;}
+nav a{text-decoration:none;color:#66fcf1;font-weight:bold;}
+nav a:hover{color:#45a1b0;}
+input, select, textarea{padding:10px;margin:5px;border-radius:8px;border:none;width:220px;}
+button{padding:10px 15px;margin:5px;border:none;border-radius:8px;background:#66fcf1;color:#000;font-weight:bold;cursor:pointer;transition:.2s;}
 button:hover{opacity:0.85;}
-.card{background:rgba(255,255,255,0.05);border-radius:10px;padding:10px;margin:5px;display:inline-block;width:220px;vertical-align:top;}
+.card{background:rgba(255,255,255,0.05);border-radius:12px;padding:15px;margin:10px;display:inline-block;width:240px;vertical-align:top;box-shadow:0 0 8px rgba(0,255,255,0.2);}
+h1,h2{color:#66fcf1;}
+#login-container{text-align:center;padding:50px;}
 </style>
 </head>
 <body>
 
-<!-- Вход -->
+<!-- --- Вход --- -->
 <div id="login-container">
 <h2>Войти</h2>
-<input type="text" id="login" placeholder="Логин">
-<input type="password" id="password" placeholder="Пароль">
+<input type="text" id="login" placeholder="Логин"><br>
+<input type="password" id="password" placeholder="Пароль"><br>
 <button onclick="login()">Войти</button>
 <div id="error-msg" style="color:red;margin-top:10px;"></div>
 </div>
 
-<!-- Основной контент -->
+<!-- --- Основной контент --- -->
 <div id="main-container" style="display:none;">
 
 <header>
 <h1>IBprofen</h1>
 <nav>
 <ul>
-<li><a href="#appointments">Запись к врачу</a></li>
-<li><a href="#bonus">Бонусы/Штрафы</a></li>
-<li><a href="#ai">ИИ-помощник</a></li>
+<li><a href="#appointments">Запись</a></li>
+<li><a href="#bonus">Бонусы</a></li>
+<li><a href="#ai">ИИ</a></li>
 <li><a href="#settings">Настройки</a></li>
 </ul>
 </nav>
-<button onclick="toggleTheme()">🌓 Сменить тему</button>
+<div>
+<button onclick="toggleTheme()">🌓 Тема</button>
 <select id="language-select" onchange="changeLanguage()">
 <option value="ru">Русский</option>
 <option value="en">English</option>
 <option value="kz">Қазақша</option>
 <option value="zh">中文</option>
 </select>
+</div>
 </header>
 
 <section id="appointments">
@@ -64,7 +68,7 @@ button:hover{opacity:0.85;}
 
 <section id="ai">
 <h2>ИИ-помощник</h2>
-<textarea id="ai-input" placeholder="Опишите симптомы или вопрос"></textarea>
+<textarea id="ai-input" placeholder="Опишите вопрос или симптомы"></textarea><br>
 <button onclick="askAI()">Спросить ИИ</button>
 <div id="ai-response" style="margin-top:10px;"></div>
 </section>
@@ -77,7 +81,7 @@ button:hover{opacity:0.85;}
 </div>
 
 <script>
-// Пользователи
+// --- Пользователи ---
 const users = [
   {role:'admin', login:'admin', password:'Jony707', name:'Довронов Жонибек'},
   {role:'doctor', login:'doctor', password:'Imran990', name:'Наниев Имран'},
@@ -87,7 +91,7 @@ const users = [
   {role:'patient', login:'Kozhamzharova', password:'Alaton1', name:'Кожамжарова Динара'}
 ];
 
-// Вход
+// --- Вход ---
 function login(){
   const loginValue=document.getElementById("login").value;
   const passwordValue=document.getElementById("password").value;
@@ -101,19 +105,19 @@ function login(){
   }
 }
 
-// Инициализация приложения
+// --- Инициализация ---
 function initApp(user){
   initAppointments(user);
   initBonus(user);
   initAI();
 }
 
-// Темная/светлая тема
+// --- Темная/светлая тема ---
 function toggleTheme(){
   document.body.classList.toggle("light-mode");
 }
 
-// Запись к врачу
+// --- Запись к врачу ---
 function initAppointments(user){
   const container=document.getElementById("appointment-container");
   const doctors=users.filter(u=>u.role==='doctor');
@@ -125,7 +129,7 @@ function initAppointments(user){
   });
 }
 
-// Бонусы и штрафы
+// --- Бонусы/Штрафы ---
 function initBonus(user){
   const container=document.getElementById("bonus-container");
   for(let i=1;i<=5;i++){
@@ -136,9 +140,8 @@ function initBonus(user){
   }
 }
 
-// ИИ-помощник
+// --- ИИ-помощник ---
 function initAI(){
-  // здесь можно подключить реальный API, пока простой пример
   window.askAI=function(){
     const input=document.getElementById("ai-input").value;
     const response=document.getElementById("ai-response");
@@ -146,10 +149,10 @@ function initAI(){
   }
 }
 
-// Мультиязычность (демо)
+// --- Мультиязычность (демо) ---
 function changeLanguage(){
   const lang=document.getElementById("language-select").value;
-  alert(`Выбран язык: ${lang} (здесь можно перевести весь интерфейс)`);
+  alert(`Выбран язык: ${lang} (интерфейс можно перевести)`);
 }
 </script>
 
