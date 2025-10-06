@@ -1,622 +1,676 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>IBprofen — Умная медсистема (demo)</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>IBprofen — Полная локальная версия</title>
 <style>
-  /* ----------------- RESET & BASE ----------------- */
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+  /* -------- base theme -------- */
   :root{
-    --bg:#0f1115; --panel:#15181d; --muted:#9aa4ad; --accent:#60d1d9; --accent-2:#4aa0a7;
+    --bg:#0f1115; --card:#13151a; --muted:#98a2ab; --accent:#2dd4d4; --accent-2:#06b6d4;
     --glass: rgba(255,255,255,0.03);
-    --radius:14px;
-    --soft: 12px;
+    --radius:12px;
+    --text:#e6eef2;
   }
   .light {
-    --bg:#f5f7f9; --panel:#ffffff; --muted:#5a6368; --accent:#0b9aa7; --accent-2:#07848b; --glass: rgba(0,0,0,0.04);
+    --bg:#f6f8fa; --card:#ffffff; --muted:#475569; --accent:#0ea5a4; --accent-2:#028a8c; --glass: rgba(0,0,0,0.03);
+    --text:#0b1020;
   }
-  body{
-    background: radial-gradient(1200px 600px at 10% 10%, rgba(18,22,26,0.6), transparent),
-                radial-gradient(900px 400px at 90% 90%, rgba(6,10,14,0.5), transparent),
-                var(--bg);
-    color: #e6eef2;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    padding:24px;
-  }
-
-  /* ---------- Layout ---------- */
-  .app {
-    max-width:1200px;
-    margin:0 auto;
-  }
-  header.app-header{
-    display:flex;
-    gap:12px;
-    align-items:center;
-    justify-content:space-between;
-    padding:18px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
-    border-radius:var(--radius);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.45);
-    margin-bottom:20px;
-    backdrop-filter: blur(6px);
-  }
-  .brand{display:flex;gap:14px;align-items:center}
-  .logo {
-    width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    display:flex;align-items:center;justify-content:center;font-weight:700;color:#04282a;
-    box-shadow: 0 6px 18px rgba(10,20,22,0.5);
-  }
-  .brand h1{font-size:18px;margin:0}
-  .brand p{margin:0;font-size:12px;color:var(--muted)}
-
-  .controls{display:flex;gap:12px;align-items:center}
-  .control-btn{
-    background:transparent;color:var(--accent);border:1px solid rgba(255,255,255,0.04);
-    padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;
-  }
-  .select, .btn {appearance:none}
-  .theme-toggle{padding:8px 10px;border-radius:10px;border:none;background:var(--panel);cursor:pointer;color:var(--accent);}
-
-  /* ---------- Main grid ---------- */
-  .grid {
-    display:grid;
-    grid-template-columns: 1fr 420px;
-    gap:20px;
-  }
-
-  /* ---------- Left: primary ---------- */
-  .panel{
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    padding:18px;border-radius:12px;backdrop-filter: blur(4px);
-    border:1px solid rgba(255,255,255,0.02);
-  }
-
-  .section {margin-bottom:18px}
-  h2.section-title{margin:0 0 12px 0;color:var(--accent);font-size:16px}
-
-  /* ---------- Login area ---------- */
-  #login-panel{max-width:520px;margin:24px auto}
-  .field{display:flex;flex-direction:column;margin-bottom:10px}
-  input[type="text"], input[type="password"], select, textarea{
-    background:var(--panel);border:1px solid rgba(255,255,255,0.03);padding:10px 12px;border-radius:10px;color:inherit;
-    outline:none;
-  }
-  input::placeholder, textarea::placeholder{color:var(--muted)}
-
-  .login-actions{display:flex;gap:10px;align-items:center;margin-top:12px}
-  .btn-primary{background:var(--accent);color:#04282a;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
-
-  .quick-logins{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .chip{background:var(--glass);padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);cursor:pointer;color:var(--muted)}
-
-  /* ---------- Right: sidebar ---------- */
-  .sidebar .panel {position:sticky;top:28px}
-
-  /* ---------- App modules ---------- */
-  .row{display:flex;gap:12px;align-items:center}
-  table{width:100%;border-collapse:collapse;margin-top:8px}
-  th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left;font-size:13px}
-  th{color:var(--muted);font-weight:700}
-  .small{font-size:12px;color:var(--muted)}
-
-  /* ---------- AI box ---------- */
-  .ai-box{display:flex;flex-direction:column;gap:8px}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+  .app{max-width:1200px;margin:18px auto;padding:18px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px;border-radius:var(--radius);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.03)}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#04282a}
+  h1{font-size:18px;margin:0}
+  .controls{display:flex;gap:10px;align-items:center}
+  select,input,textarea,button{font:inherit}
+  select,input,textarea{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:var(--card);color:var(--text)}
   textarea{min-height:80px;resize:vertical}
-  .ai-response{padding:12px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.02);min-height:48px}
-
-  /* ---------- Responsive ---------- */
+  button{cursor:pointer;border-radius:8px;padding:8px 12px;border:none}
+  .btn-primary{background:var(--accent);color:#04282a;font-weight:700}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+  .panel{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+  .section-title{font-weight:700;color:var(--accent);margin:0 0 10px 0}
+  .row{display:flex;gap:10px;align-items:center}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
+  th{color:var(--muted);font-size:13px}
+  .muted{color:var(--muted);font-size:13px}
+  .small{font-size:13px;color:var(--muted)}
+  .chip{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);cursor:pointer;margin-right:6px}
+  footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+  input[type=file]{padding:6px}
+  /* responsive */
   @media (max-width:980px){
     .grid{grid-template-columns:1fr}
-    .sidebar{order:2}
   }
-  /* ---------- Footer small ---------- */
-  footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}
 </style>
 </head>
 <body>
 <div class="app" id="app">
-  <header class="app-header">
+  <header>
     <div class="brand">
       <div class="logo">IB</div>
       <div>
         <h1>IBprofen</h1>
-        <p>Smart medical system • demo</p>
+        <div class="small">Полнофункциональная локальная версия</div>
       </div>
     </div>
 
     <div class="controls">
-      <div class="small">Язык</div>
-      <select id="lang" class="select" aria-label="Language">
+      <select id="uiLang" title="Язык">
         <option value="ru">Русский</option>
         <option value="en">English</option>
         <option value="kz">Қазақша</option>
         <option value="zh">中文</option>
       </select>
-
-      <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌓</button>
-      <!-- quick help -->
-      <button class="control-btn" id="helpBtn">Помощь</button>
+      <button id="themeBtn" class="btn-ghost">🌓 Тема</button>
+      <button id="helpBtn" class="btn-ghost">Помощь</button>
     </div>
   </header>
 
-  <!-- LOGIN (shows until auth) -->
-  <div id="login-panel" class="panel" role="region" aria-label="login">
-    <h2 class="section-title">Вход в систему</h2>
-    <div class="field"><label>Логин</label><input id="login" type="text" placeholder="Введите логин"></div>
-    <div class="field"><label>Пароль</label><input id="password" type="password" placeholder="Введите пароль"></div>
-    <div class="login-actions">
-      <button class="btn-primary" id="doLogin">Войти</button>
-      <button class="btn-ghost" id="demoRegister">Регистрация (демо)</button>
+  <!-- LOGIN PANEL -->
+  <div id="loginArea" class="panel" style="margin-top:18px">
+    <h3 class="section-title" id="loginTitle">Вход / Регистрация</h3>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+      <div style="flex:1;min-width:200px">
+        <label class="small">Логин</label>
+        <input id="inputLogin" placeholder="логин (например: admin)">
+      </div>
+      <div style="flex:1;min-width:200px">
+        <label class="small">Пароль</label>
+        <input id="inputPass" type="password" placeholder="пароль">
+      </div>
+      <div style="flex:0 0 220px">
+        <label class="small">Роль</label>
+        <select id="inputRole">
+          <option value="patient">Пациент</option>
+          <option value="doctor">Врач</option>
+          <option value="admin">Админ</option>
+        </select>
+      </div>
     </div>
 
-    <div class="small" style="margin-top:12px">Быстрый вход (для демонстрации):</div>
-    <div class="quick-logins" id="quick">
-      <!-- quick buttons created by JS -->
+    <div style="display:flex;gap:10px;align-items:center">
+      <button id="btnLogin" class="btn-primary">Войти</button>
+      <button id="btnRegister" class="btn-ghost">Зарегистрироваться</button>
+      <div id="loginMsg" class="small" style="margin-left:8px;color:var(--muted)"></div>
     </div>
-    <div id="login-error" class="small" style="color:#ff8b8b;margin-top:8px"></div>
-    <div class="small" style="margin-top:12px;color:var(--muted)">
-      Подсказка: используйте быстрые кнопки для входа. После входа откроется интерфейс с записью, бонусами и ИИ.
+
+    <div style="margin-top:12px">
+      <div class="small">Быстрый вход для теста (клик — заполнить)</div>
+      <div style="margin-top:8px" id="quickBtns"></div>
+    </div>
+
+    <div style="margin-top:12px" class="small muted">
+      Сохранение локальное: все данные хранятся в вашем браузере (localStorage). Для продакшна необходим backend, БД и хранение мед. данных с шифрованием.
     </div>
   </div>
 
-  <!-- MAIN content (hidden until login) -->
-  <div id="main" style="display:none">
-    <div class="grid">
-      <!-- LEFT (primary) -->
-      <div>
-        <div class="panel section" id="welcomePanel">
-          <h2 class="section-title" id="welcomeTitle">Добро пожаловать в IBprofen</h2>
-          <p id="welcomeDesc">Инновационная медицинская система: запись к врачу, управление бонусами и умный ИИ‑помощник.</p>
-          <div style="margin-top:12px" class="row">
-            <div class="card" style="min-width:180px">
-              <div class="small">Текущий пользователь</div>
-              <div id="who" style="font-weight:700;margin-top:6px">—</div>
-              <div id="role" class="small">—</div>
-            </div>
-            <div class="card" style="min-width:180px">
-              <div class="small">Баланс(демо)</div>
-              <div id="balance" style="font-weight:700;margin-top:6px">0</div>
-              <div class="small">Бонусы / штрафы</div>
-            </div>
+  <!-- MAIN GRID -->
+  <div id="mainGrid" style="display:none" class="grid">
+    <!-- LEFT -->
+    <div>
+      <div class="panel" id="dashboardPanel">
+        <h3 class="section-title" id="welcomeTitle">Добро пожаловать</h3>
+        <p id="welcomeDesc" class="muted">Здесь вы можете записаться к врачу, смотреть баланс, поговорить с ИИ‑помощником и управлять пациентами (если вы админ).</p>
+
+        <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+          <div style="min-width:160px" class="panel">
+            <div class="small">Пользователь</div>
+            <div id="curName" style="font-weight:700">—</div>
+            <div id="curRole" class="small muted">—</div>
+          </div>
+          <div style="min-width:160px" class="panel">
+            <div class="small">Баланс</div>
+            <div id="curBalance" style="font-weight:700">0</div>
+            <div class="small muted">Бонусы / штрафы</div>
           </div>
         </div>
-
-        <!-- APPOINTMENTS -->
-        <div class="panel section" id="appointmentsPanel">
-          <h2 class="section-title" id="appointmentsTitle">Запись к врачу</h2>
-          <div class="row">
-            <div style="flex:1">
-              <label id="selectPatientLabel">Пациент</label>
-              <select id="selectPatient"></select>
-            </div>
-            <div style="flex:1">
-              <label id="selectDoctorLabel">Врач</label>
-              <select id="selectDoctor"></select>
-            </div>
-            <div style="flex:1">
-              <label id="selectDateLabel">Дата</label>
-              <input id="selectDate" type="date">
-            </div>
-          </div>
-          <div style="margin-top:12px">
-            <button class="btn-primary" id="bookBtn">Записаться</button>
-            <button class="btn-ghost" id="showSchedule">Показать записи</button>
-          </div>
-
-          <div style="margin-top:14px">
-            <table id="appointmentsTable" aria-label="appointments table">
-              <thead>
-                <tr><th>Пациент</th><th>Врач</th><th>Дата</th><th>Статус</th></tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- BONUSES -->
-        <div class="panel section" id="bonusPanel">
-          <h2 class="section-title" id="bonusTitle">Бонусы и штрафы</h2>
-          <div style="display:flex;gap:12px;flex-wrap:wrap" id="bonusControls"></div>
-          <div style="margin-top:12px">
-            <table id="bonusTable">
-              <thead><tr><th>Пациент</th><th>Бонусы</th><th>Штрафы</th><th>Баланс</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- AI Assistant -->
-        <div class="panel section" id="aiPanel">
-          <h2 class="section-title" id="aiTitle">ИИ‑помощник</h2>
-          <div class="ai-box">
-            <label id="aiInputLabel">Опишите симптомы или вопрос</label>
-            <textarea id="aiInput" placeholder="Например: болит живот и тошнота"></textarea>
-            <div class="row">
-              <button class="btn-primary" id="aiAsk">Спросить ИИ</button>
-              <button class="btn-ghost" id="aiClear">Очистить</button>
-              <div class="small" style="margin-left:auto;color:var(--muted)">Поддерживаются русский/английский</div>
-            </div>
-            <div class="ai-response" id="aiResponse" aria-live="polite"></div>
-          </div>
-        </div>
-
-        <footer><small id="footerCredits">IBprofen demo — готово к хакатону</small></footer>
       </div>
 
-      <!-- RIGHT (sidebar) -->
-      <aside class="sidebar">
-        <div class="panel">
-          <h2 class="section-title">Команда (куда вставлять фото)</h2>
-          <div id="team" style="display:flex;flex-direction:column;gap:10px">
-            <!-- Example card with image placeholder -->
-            <!-- To add real photos: replace src with "images/jony.jpg" and put image in folder -->
-            <div style="display:flex;gap:10px;align-items:center">
-              <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#04282a">DJ</div>
-              <div>
-                <div style="font-weight:700">Довронов Жонибек</div>
-                <div class="small">Капитан команды</div>
-              </div>
-            </div>
+      <!-- APPOINTMENT MODULE -->
+      <div class="panel" style="margin-top:14px">
+        <h3 class="section-title" id="apptTitle">Запись к врачу</h3>
 
-            <div style="display:flex;gap:10px;align-items:center">
-              <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#04282a">MA</div>
-              <div>
-                <div style="font-weight:700">Мәріпбек Әдлет</div>
-                <div class="small">Тех специалист</div>
-              </div>
-            </div>
-
-            <div style="display:flex;gap:10px;align-items:center">
-              <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#04282a">NI</div>
-              <div>
-                <div style="font-weight:700">Наниев Имран</div>
-                <div class="small">Дизайнер</div>
-              </div>
-            </div>
+        <div class="row" style="margin-bottom:8px">
+          <div style="flex:1">
+            <label class="small" id="labelPatient">Пациент</label>
+            <select id="selectPatient"></select>
+          </div>
+          <div style="flex:1">
+            <label class="small" id="labelDoctor">Врач</label>
+            <select id="selectDoctor"></select>
+          </div>
+          <div style="flex:1">
+            <label class="small" id="labelDate">Дата</label>
+            <input id="selectDate" type="date"/>
           </div>
         </div>
 
-        <div class="panel" style="margin-top:12px">
-          <h2 class="section-title">Статистика (демо)</h2>
-          <div class="small">Пациентов: <strong id="statsPatients">0</strong></div>
-          <div class="small">Врачей: <strong id="statsDoctors">0</strong></div>
-          <div class="small">Записей: <strong id="statsAppointments">0</strong></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <select id="timeSlot">
+            <!-- times generated by JS -->
+          </select>
+          <button id="bookBtn" class="btn-primary">Записаться</button>
+          <button id="viewSched" class="btn-ghost">Показать расписание</button>
         </div>
-      </aside>
+
+        <div style="margin-top:12px">
+          <table id="apptTable">
+            <thead><tr><th>Пациент</th><th>Врач</th><th>Дата</th><th>Время</th><th>Статус</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AI MODULE -->
+      <div class="panel" style="margin-top:14px">
+        <h3 class="section-title" id="aiTitle">ИИ‑помощник</h3>
+        <div class="small muted">Опишите симптомы — ИИ подскажет конкретного врача и краткие рекомендации.</div>
+        <textarea id="aiInput" placeholder="Например: болит живот, тошнота, темп 38"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="aiAsk" class="btn-primary">Спросить ИИ</button>
+          <button id="aiClear" class="btn-ghost">Очистить</button>
+        </div>
+        <div id="aiResult" style="margin-top:12px" class="panel"></div>
+      </div>
+
+      <!-- ADMIN: user list & management -->
+      <div class="panel" id="adminPanel" style="margin-top:14px;display:none">
+        <h3 class="section-title">Админ: Управление пользователями</h3>
+        <div style="margin-bottom:8px">
+          <button id="createDemoData" class="btn-ghost">Создать демо‑данные</button>
+          <button id="exportData" class="btn-ghost">Экспорт JSON</button>
+          <button id="importData" class="btn-ghost">Импорт JSON</button>
+          <input id="importFile" type="file" accept=".json" style="display:none"/>
+        </div>
+        <table id="usersTable">
+          <thead><tr><th>Имя</th><th>Логин</th><th>Роль</th><th>Действия</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="sidebar">
+      <div class="panel">
+        <h3 class="section-title">Команда и фото</h3>
+        <div class="small muted">Загрузите фотографии — они сохранятся локально (DataURL)</div>
+        <div style="margin-top:10px">
+          <input id="photoUpload" type="file" accept="image/*"/>
+        </div>
+        <div id="teamList" style="margin-top:12px"></div>
+      </div>
+
+      <div class="panel" style="margin-top:12px">
+        <h3 class="section-title">Статистика</h3>
+        <div class="small">Пациентов: <strong id="statPatients">0</strong></div>
+        <div class="small">Врачей: <strong id="statDoctors">0</strong></div>
+        <div class="small">Записей: <strong id="statAppts">0</strong></div>
+      </div>
+
+      <div class="panel" style="margin-top:12px">
+        <h3 class="section-title">Быстрый вход</h3>
+        <div class="small muted">Используйте для тестирования</div>
+        <div style="margin-top:8px" id="quickLoginArea"></div>
+      </div>
     </div>
   </div>
+
+  <footer>IBprofen — локальный полнофункциональный прототип. Для продакшна требуется сервер и безопасность.</footer>
 </div>
 
 <script>
-/* ================== Data & initial setup ================== */
-/* Test accounts (you can change them) */
-const USERS = [
-  {id:1, role:'admin', login:'admin', password:'Jony707', name:'Довронов Жонибек'},
-  {id:2, role:'doctor', login:'imran', password:'Imran990', name:'Наниев Имран'},
-  {id:3, role:'doctor', login:'adlet', password:'Adlet990', name:'Мәріпбек Әдлет'},
-  {id:4, role:'patient', login:'filko', password:'Alaton1', name:'Филко Иван'},
-  {id:5, role:'patient', login:'myrz', password:'Alaton1', name:'Myrzakunurov Арман'},
-  {id:6, role:'patient', login:'dinara', password:'Alaton1', name:'Kozhamzharova Динара'},
-];
+/* ========== Utilities ========== */
+const $ = id => document.getElementById(id);
+const nowISODate = (d=new Date()) => d.toISOString().slice(0,10);
 
-/* In-memory app state (demo) */
-let state = {
-  currentUser: null,
-  appointments: [], // {patient, doctor, date, status}
-  balances: {},     // patientName -> balance number
-};
-
-/* Add initial balances */
-USERS.filter(u=>u.role==='patient').forEach(p=>state.balances[p.name] = Math.floor(Math.random()*100));
-
-/* Quick login widgets */
-const quick = document.getElementById('quick');
-USERS.forEach(u=>{
-  const chip = document.createElement('div');
-  chip.className = 'chip';
-  chip.textContent = `${u.name} (${u.role})`;
-  chip.onclick = ()=>{ document.getElementById('login').value = u.login; document.getElementById('password').value = u.password; };
-  quick.appendChild(chip);
-});
-
-/* Stats update */
-function updateStats(){
-  document.getElementById('statsPatients').innerText = USERS.filter(u=>u.role==='patient').length;
-  document.getElementById('statsDoctors').innerText = USERS.filter(u=>u.role==='doctor').length;
-  document.getElementById('statsAppointments').innerText = state.appointments.length;
+/* ========== Persistent storage ========== */
+const STORAGE_KEY = 'ibprofen_data_v1';
+function loadStore(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  } catch(e){ console.error('loadStore err',e); return null; }
+}
+function saveStore(store){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
 }
 
-/* ================== AUTH & INIT ================== */
-document.getElementById('doLogin').addEventListener('click', doLoginFromBtn);
-document.getElementById('login').addEventListener('keydown', e => { if(e.key==='Enter') doLoginFromBtn(); });
-document.getElementById('password').addEventListener('keydown', e => { if(e.key==='Enter') doLoginFromBtn(); });
-
-function doLoginFromBtn(){
-  const L = document.getElementById('login').value.trim();
-  const P = document.getElementById('password').value;
-  const u = USERS.find(x => x.login === L && x.password === P);
-  const err = document.getElementById('login-error');
-  if(!u){ err.textContent = 'Неверный логин или пароль'; return; }
-  err.textContent = '';
-  state.currentUser = u;
-  showAppForUser(u);
+/* Default data setup if empty */
+let STORE = loadStore();
+if(!STORE){
+  STORE = {
+    users: [
+      {id:1,role:'admin',login:'admin',password:'Jony707',name:'Довронов Жонибек',photo:null},
+      {id:2,role:'doctor',login:'imran',password:'Imran990',name:'Наниев Имран',photo:null},
+      {id:3,role:'doctor',login:'adlet',password:'Adlet990',name:'Мәріпбек Әдлет',photo:null},
+      {id:4,role:'patient',login:'filko',password:'Alaton1',name:'Филко Иван',photo:null},
+      {id:5,role:'patient',login:'myrz',password:'Alaton1',name:'Myrzakunurov Арман',photo:null},
+      {id:6,role:'patient',login:'dinara',password:'Alaton1',name:'Kozhamzharova Динара',photo:null},
+    ],
+    appointments: [], // {id, patientName, doctorName, date, time, status}
+    balances: {}, // name -> number
+  };
+  // give initial balances
+  STORE.users.filter(u=>u.role==='patient').forEach(p=>STORE.balances[p.name] = Math.floor(Math.random()*80) + 10);
+  saveStore(STORE);
 }
 
-/* Demo register (no real signup, just alert) */
-document.getElementById('demoRegister').addEventListener('click', ()=> alert('Регистрация в демо отключена — используйте быстрый вход.'));
+/* In-memory session */
+let CURRENT = {user:null};
 
-function showAppForUser(user){
-  // hide login, show main
-  document.getElementById('login-panel').style.display = 'none';
-  document.getElementById('main').style.display = 'block';
-  // fill header user info
-  document.getElementById('who').innerText = user.name;
-  document.getElementById('role').innerText = user.role.toUpperCase();
-  // init modules
-  populatePatientDoctorSelects();
+/* ========== UI wiring ========== */
+function initUI(){
+  // quick login chips
+  const quickArea = $('quickBtns');
+  quickArea.innerHTML='';
+  STORE.users.forEach(u=>{
+    const chip = document.createElement('div'); chip.className='chip'; chip.textContent = `${u.name} (${u.role})`;
+    chip.onclick = ()=>{ $('inputLogin').value = u.login; $('inputPass').value = u.password; };
+    quickArea.appendChild(chip);
+  });
+
+  // quick login buttons in sidebar
+  const qArea = $('quickLoginArea'); qArea.innerHTML='';
+  STORE.users.forEach(u=>{
+    const b = document.createElement('button'); b.className='chip'; b.textContent=u.login; 
+    b.onclick = ()=> { doLogin(u.login, u.password); };
+    qArea.appendChild(b);
+  });
+
+  // time slots
+  const timeSlot = $('timeSlot'); timeSlot.innerHTML='';
+  const slots = ['09:00','09:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30'];
+  slots.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; timeSlot.appendChild(o); });
+
+  // quick file upload
+  $('photoUpload').addEventListener('change', e=>{
+    const f = e.target.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      // set sample: attach to current user's photo if logged
+      if(CURRENT.user){
+        const u = STORE.users.find(x=>x.login===CURRENT.user.login);
+        if(u){ u.photo = ev.target.result; saveStore(STORE); renderTeam(); alert('Фото сохранено для '+u.name); return; }
+      }
+      // Otherwise store as team extra (push)
+      STORE.users.push({id: Date.now(), role:'other', login:'user'+Date.now(), password:'', name:f.name, photo:ev.target.result});
+      saveStore(STORE);
+      renderTeam();
+      alert('Фото добавлено в команду (локально).');
+    };
+    reader.readAsDataURL(f);
+  });
+
+  // buttons
+  $('btnLogin').addEventListener('click', ()=> doLogin($('inputLogin').value.trim(), $('inputPass').value));
+  $('btnRegister').addEventListener('click', doRegister);
+
+  $('bookBtn').addEventListener('click', onBook);
+  $('viewSched').addEventListener('click', renderAppointmentsTable);
+
+  $('aiAsk').addEventListener('click', onAskAI);
+  $('aiClear').addEventListener('click', ()=>{ $('aiInput').value=''; $('aiResult').innerHTML=''; });
+
+  $('themeBtn').addEventListener('click', ()=> document.body.classList.toggle('light'));
+  $('helpBtn').addEventListener('click', ()=> alert('IBprofen — локальная полнофункциональная демонстрация. Для реального использования нужен backend и защита данных.'));
+
+  $('createDemoData').addEventListener('click', createDemoData);
+  $('exportData').addEventListener('click', ()=> {
+    const a = document.createElement('a');
+    a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(STORE,null,2));
+    a.download = 'ibprofen_export.json';
+    a.click();
+  });
+  $('importData').addEventListener('click', ()=> $('importFile').click());
+  $('importFile').addEventListener('change', (e)=>{
+    const f = e.target.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      try{
+        const data = JSON.parse(ev.target.result);
+        if(confirm('Импортировать данные и перезаписать текущие?')){ STORE = data; saveStore(STORE); alert('Импортировано'); location.reload(); }
+      }catch(err){ alert('Ошибка импорта: '+err.message); }
+    };
+    r.readAsText(f);
+  });
+
+  renderTeam();
+  updateStats();
+  populateSelects();
+  renderUsersTable();
+  renderAppointmentsTable();
+  renderBalances();
+}
+
+/* ========== Auth ========== */
+function doLogin(login, pass){
+  const msg = $('loginMsg');
+  const u = STORE.users.find(x=>x.login===login && x.password===pass);
+  if(!u){ msg.textContent = 'Неверный логин/пароль'; return; }
+  CURRENT.user = u;
+  $('loginArea').style.display='none';
+  $('mainGrid').style.display='grid';
+  $('curName').innerText = u.name;
+  $('curRole').innerText = u.role.toUpperCase();
+  $('curBalance').innerText = STORE.balances[u.name] ?? 0;
+  // admin panel visibility
+  $('adminPanel').style.display = (u.role==='admin') ? 'block' : 'none';
+  // load user-specific UI
+  populateSelects();
+  renderAppointmentsTable();
   renderBalances();
   updateStats();
-  // generate some demo appointments (if empty)
-  if(state.appointments.length === 0) generateDemoAppointments(8);
-  renderAppointmentsTable();
-  // set welcome texts
-  transSet('welcomeTitle', {ru:'Добро пожаловать в IBprofen', en:'Welcome to IBprofen', kz:'IBprofen-ге қош келдіңіз', zh:'欢迎来到 IBprofen'});
-  transSet('welcomeDesc', {ru:'Инновационная медицинская система: запись к врачу, управление бонусами и умный ИИ‑помощник.', en:'Innovative medical system: appointments, bonuses and AI assistant.', kz:'Инновациялық медициналық жүйе: дәрігерге жазылу, бонустар және ИИ‑көмекші.', zh:'创新医疗系统：预约、奖励与 AI 助手。'});
+  $('loginMsg').textContent = '';
 }
 
-/* ================== Appointments ================== */
-function populatePatientDoctorSelects(){
-  const ps = document.getElementById('selectPatient');
-  const ds = document.getElementById('selectDoctor');
-  ps.innerHTML=''; ds.innerHTML='';
-  USERS.filter(u=>u.role==='patient').forEach(p=>{
-    const o = document.createElement('option'); o.value=p.name; o.textContent = p.name; ps.appendChild(o);
-  });
-  USERS.filter(u=>u.role==='doctor').forEach(d=>{
-    const o = document.createElement('option'); o.value=d.name; o.textContent = d.name; ds.appendChild(o);
-  });
+function doRegister(){
+  const login = $('inputLogin').value.trim();
+  const pass = $('inputPass').value;
+  const role = $('inputRole').value;
+  if(!login || !pass){ alert('Введите логин и пароль'); return; }
+  if(STORE.users.some(u=>u.login===login)){ alert('Логин занят'); return; }
+  const name = prompt('Введите имя (как отображать):', login) || login;
+  const newUser = {id: Date.now(), role, login, password:pass, name, photo:null};
+  STORE.users.push(newUser);
+  if(role==='patient') STORE.balances[newUser.name] = 0;
+  saveStore(STORE);
+  initUI();
+  renderUsersTable();
+  alert('Пользователь создан. Войдите через форму.');
 }
 
-document.getElementById('bookBtn').addEventListener('click', ()=>{
-  const patient = document.getElementById('selectPatient').value;
-  const doctor  = document.getElementById('selectDoctor').value;
-  const date    = document.getElementById('selectDate').value;
-  if(!date) { alert('Выберите дату'); return; }
-  // simple conflict check:
-  const conflict = state.appointments.some(a => a.doctor===doctor && a.date === date);
-  if(conflict){ alert('У врача уже есть запись на эту дату'); return; }
-  const ap = {patient, doctor, date, status:'Запланировано'};
-  state.appointments.push(ap);
+/* ========== Appointments logic ========== */
+function populateSelects(){
+  const sP = $('selectPatient'), sD = $('selectDoctor');
+  sP.innerHTML=''; sD.innerHTML='';
+  STORE.users.filter(u=>u.role==='patient').forEach(p=>{
+    const o=document.createElement('option'); o.value=p.name; o.textContent=p.name; sP.appendChild(o);
+  });
+  STORE.users.filter(u=>u.role==='doctor').forEach(d=>{
+    const o=document.createElement('option'); o.value=d.name; o.textContent=d.name; sD.appendChild(o);
+  });
+
+  // if current user is patient, preselect them
+  if(CURRENT.user && CURRENT.user.role==='patient'){
+    sP.value = CURRENT.user.name;
+  }
+}
+
+function onBook(){
+  const patient = $('selectPatient').value;
+  const doctor = $('selectDoctor').value;
+  const date = $('selectDate').value;
+  const time = $('timeSlot').value;
+  if(!patient || !doctor || !date || !time){ alert('Заполните все поля'); return; }
+  // check conflict: same doctor same date and same time
+  const conflict = STORE.appointments.some(a=> a.doctorName===doctor && a.date===date && a.time===time);
+  if(conflict){ alert('У выбранного врача уже есть запись в это время'); return; }
+  const id = Date.now() + Math.floor(Math.random()*1000);
+  STORE.appointments.push({id, patientName:patient, doctorName:doctor, date, time, status:'Запланировано'});
+  saveStore(STORE);
   renderAppointmentsTable();
   updateStats();
-  alert(`Запись создана: ${patient} → ${doctor} (${date})`);
-});
-
-document.getElementById('showSchedule').addEventListener('click', ()=> renderAppointmentsTable());
+  alert(`Успешно: ${patient} → ${doctor} ${date} ${time}`);
+}
 
 function renderAppointmentsTable(){
-  const tbody = document.querySelector('#appointmentsTable tbody');
-  tbody.innerHTML = '';
-  state.appointments.slice().reverse().forEach(a=>{
+  const tbody = document.querySelector('#apptTable tbody');
+  tbody.innerHTML='';
+  // filter based on role: doctor sees only their appointments; patient sees only theirs; admin sees all
+  let list = STORE.appointments.slice().sort((a,b)=> (a.date > b.date)?1:-1);
+  if(CURRENT.user){
+    if(CURRENT.user.role==='doctor') list = list.filter(x=>x.doctorName===CURRENT.user.name);
+    if(CURRENT.user.role==='patient') list = list.filter(x=>x.patientName===CURRENT.user.name);
+  } else {
+    // if not logged, show none
+    list = [];
+  }
+  list.forEach(a=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${a.patient}</td><td>${a.doctor}</td><td>${a.date}</td><td>${a.status}</td>`;
+    tr.innerHTML = `<td>${a.patientName}</td><td>${a.doctorName}</td><td>${a.date}</td><td>${a.time}</td><td>${a.status}</td>`;
     tbody.appendChild(tr);
   });
 }
 
-/* Demo generate appointments */
-function generateDemoAppointments(n=10){
-  const patients = USERS.filter(u=>u.role==='patient').map(p=>p.name);
-  const doctors = USERS.filter(u=>u.role==='doctor').map(d=>d.name);
-  const today = new Date();
-  for(let i=0;i<n;i++){
-    const date = new Date(today.getTime() + (i+1)*24*3600*1000);
-    const dstr = date.toISOString().slice(0,10);
-    state.appointments.push({
-      patient: patients[i % patients.length],
-      doctor: doctors[i % doctors.length],
-      date: dstr,
-      status: (i%3===0)?'Завершено':'Запланировано'
-    });
-  }
-}
-
-/* ================== Bonuses & balances ================== */
+/* ========== Balances & bonuses ========== */
 function renderBalances(){
   const tbody = document.querySelector('#bonusTable tbody');
-  tbody.innerHTML = '';
-  Object.keys(state.balances).forEach(name=>{
-    const bonuses = Math.floor(state.balances[name] / 2);
-    const penalties = Math.floor(Math.random()*5);
-    const balance = state.balances[name];
+  tbody.innerHTML='';
+  Object.keys(STORE.balances).forEach(name=>{
+    const bonuses = Math.floor(STORE.balances[name]/2);
+    const penalties = Math.floor(Math.random()*3);
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${name}</td><td>${bonuses}</td><td>${penalties}</td><td>${balance}</td>`;
+    tr.innerHTML = `<td>${name}</td><td>${bonuses}</td><td>${penalties}</td><td>${STORE.balances[name]}</td>`;
     tbody.appendChild(tr);
   });
-
-  // controls: add/subtract bonuses for current user (if admin see all)
-  const ctr = document.getElementById('bonusControls');
-  ctr.innerHTML = '';
-  const cur = state.currentUser;
-  if(!cur) return;
-  if(cur.role === 'admin'){
-    // admin can adjust any patient
-    USERS.filter(u=>u.role==='patient').forEach(p=>{
-      const b = document.createElement('button');
-      b.className = 'btn-ghost';
-      b.textContent = `+10 ${p.name}`;
-      b.onclick = ()=>{ state.balances[p.name] +=10; renderBalances(); };
-      const m = document.createElement('button'); m.className='btn-ghost'; m.textContent=`-10 ${p.name}`;
-      m.onclick = ()=>{ state.balances[p.name] = Math.max(0, state.balances[p.name]-10); renderBalances(); };
-      ctr.appendChild(b); ctr.appendChild(m);
-    });
-  } else if(cur.role === 'patient'){
-    const add = document.createElement('button'); add.className='btn-primary'; add.textContent='Заработать +10';
-    add.onclick = ()=>{ state.balances[cur.name] +=10; renderBalances(); alert('Бонус +10 начислен (демо)'); };
-    const spend = document.createElement('button'); spend.className='btn-ghost'; spend.textContent='Списать -5';
-    spend.onclick = ()=>{ state.balances[cur.name] = Math.max(0, state.balances[cur.name]-5); renderBalances(); alert('Списано -5 (демо)'); };
-    ctr.appendChild(add); ctr.appendChild(spend);
-  } else {
-    ctr.innerHTML = '<div class="small">Доступны только для пациентов и админа</div>';
-  }
 }
 
-/* ================== AI assistant ================== */
-/* Improved keyword-based mapping to specialties */
+/* ========== AI assistant (keyword mapping) ========== */
 const AI_RULES = [
-  {keys:['живот','боль в животе','тошно','тошнота','рвота','диарея','печень','гастрит','гастроэнтерит'], doctor:'Гастроэнтеролог', advice:'Если боль сильная или длится более суток — срочно к гастроэнтерологу. Пейте воду, избегайте жирной пищи.'},
-  {keys:['глаза','зрение','светобоязнь','слепота','зуд глаз','резь в глазах'], doctor:'Офтальмолог', advice:'Обратитесь к офтальмологу для проверки зрения и осмотра.'},
-  {keys:['голова','головная боль','мигрень','головокружение'], doctor:'Невролог', advice:'Если часто болит голова или есть необычные симптомы — покажитесь неврологу.'},
-  {keys:['сердце','боль в груди','тахикардия','сердцебиение'], doctor:'Кардиолог', advice:'При боли в груди немедленно обратитесь к кардиологу / в неотложку.'},
-  {keys:['кашель','кашляет','кашель и температура','горло','боль в горле'], doctor:'Терапевт / ЛОР', advice:'Если кашель длительный или сопровождается температурой — к терапевту или ЛОРу.'},
-  {keys:['аллерг','сыпь','зуд','крапивница','отек'], doctor:'Аллерголог', advice:'Возможно аллергическая реакция — обратитесь к аллергологу.'},
-  {keys:['сустав','боль в сустав','артрит','боли в спине'], doctor:'Ревматолог / Ортопед', advice:'Показаться к ортопеду или ревматологу для обследования.'},
-  {keys:['псих','депресс','тревога','стресс','сон'], doctor:'Психотерапевт', advice:'Если состояние влияет на жизнь — обратитесь к психотерапевту.'},
-  {keys:['диабет','сахар','глюкоза'], doctor:'Эндокринолог', advice:'Нужно обследование у эндокринолога и контроль сахара.'},
+  {keys: ['живот','боль в животе','тошно','тошнота','рвота','диарея','печень','гастрит'], doctor:'Гастроэнтеролог', advice:'Похоже на проблемы ЖКТ — рекомендуется гастроэнтеролог.'},
+  {keys: ['глаза','зрение','слеп','резь','зуд глаз'], doctor:'Офтальмолог', advice:'Проблемы со зрением — обратитесь к офтальмологу.'},
+  {keys: ['голова','головная','мигрень','головокружение'], doctor:'Невролог', advice:'Невролог поможет при постоянных головных болях.'},
+  {keys: ['сердце','боль в груди','тахикард'], doctor:'Кардиолог', advice:'Боль в груди — срочно обратиться к кардиологу.'},
+  {keys: ['кашель','горло','ангина','горло болит'], doctor:'Терапевт', advice:'Начните с терапевта или ЛОРа при боли в горле и кашле.'},
+  {keys: ['сыпь','аллерг','зуд','крапивница'], doctor:'Аллерголог', advice:'Возможно аллергия — обратитесь к аллергологу.'},
+  {keys: ['шкала','депресс','тревога','сон'], doctor:'Психотерапевт', advice:'Если эмоциональные симптомы — психотерапевт поможет.'},
+  {keys: ['сахар','диабет','глюкоза'], doctor:'Эндокринолог', advice:'Проверьте уровень сахара, обратитесь к эндокринологу.'},
 ];
 
 function aiSuggest(text){
-  if(!text || text.trim().length < 2) return {doctor:null, advice:'Опишите симптомы чуть подробнее.'};
+  if(!text || text.trim().length < 2) return {doctor:null, advice:'Опишите симптомы подробнее.'};
   const s = text.toLowerCase();
-  // try to match by keys (longer words first)
   for(const rule of AI_RULES){
     for(const k of rule.keys){
-      if(s.includes(k)){
-        return {doctor: rule.doctor, advice: rule.advice};
-      }
+      if(s.includes(k)) return {doctor:rule.doctor, advice:rule.advice};
     }
   }
-  // fallback: simple heuristics
-  if(s.includes('темпера') || s.includes('лихорад') || s.includes('жар')){
-    return {doctor:'Терапевт', advice:'Повышенная температура — обратитесь к терапевту.'};
-  }
-  return {doctor:'Терапевт', advice:'Симптомы не однозначны — начните с терапевта для первичного осмотра.'};
+  // fallback
+  if(s.includes('темпера') || s.includes('жар')) return {doctor:'Терапевт', advice:'Температура — свяжитесь с терапевтом.'};
+  return {doctor:'Терапевт', advice:'Неоднозначно — начните с терапевта.'};
 }
 
-document.getElementById('aiAsk').addEventListener('click', ()=>{
-  const text = document.getElementById('aiInput').value;
-  const resp = aiSuggest(text);
-  const out = document.getElementById('aiResponse');
-  out.innerHTML = `<strong>Рекомендация:</strong> ${resp.advice} <div class="small" style="margin-top:6px">Подходит специалист: <strong>${resp.doctor}</strong></div>`;
-  // offer quick action: show doctors of that specialty
-  const docNames = USERS.filter(u=>u.role==='doctor').map(d=>d.name).join(', ');
-  // If needed, could map specialty->doctor; for demo we show all docs with button to record appointment
-  const quick = document.createElement('div'); quick.style.marginTop='8px';
-  const bookBtn = document.createElement('button'); bookBtn.className='btn-primary'; bookBtn.textContent='Записаться к специалисту (быстро)';
-  bookBtn.onclick = ()=> {
-    // set selects to first patient/current user if patient
-    if(state.currentUser && state.currentUser.role==='patient'){
-      document.getElementById('selectPatient').value = state.currentUser.name;
-    }
-    // set doctor to first available (demo)
-    const doc = USERS.find(u=>u.role==='doctor');
-    if(doc) document.getElementById('selectDoctor').value = doc.name;
-    // set date to tomorrow
-    const tomorrow = new Date(Date.now()+24*3600*1000);
-    document.getElementById('selectDate').value = tomorrow.toISOString().slice(0,10);
-    alert('Поля заполнены — нажмите "Записаться" чтобы подтвердить.');
-  };
-  quick.appendChild(bookBtn);
-  out.appendChild(quick);
-});
+function onAskAI(){
+  const txt = $('aiInput').value.trim();
+  const out = $('aiResult');
+  out.innerHTML = '<div class="small muted">Обработка...</div>';
+  setTimeout(()=>{
+    const res = aiSuggest(txt);
+    out.innerHTML = `<div style="font-weight:700">${res.doctor ?? 'Рекомендуемый врач'}</div><div class="muted" style="margin-top:6px">${res.advice}</div>`;
+    // add quick book button
+    const quick = document.createElement('div'); quick.style.marginTop='8px';
+    const bookBtn = document.createElement('button'); bookBtn.className='btn-primary'; bookBtn.textContent='Автозапись к специалисту';
+    bookBtn.onclick = ()=> {
+      // prefill patient (current patient if any), doctor -> first doctor, date -> tomorrow
+      if(CURRENT.user && CURRENT.user.role==='patient') $('selectPatient').value = CURRENT.user.name;
+      // choose a doctor with role doctor (we don't map specialty->specific doctor in demo)
+      const doc = STORE.users.find(u=>u.role==='doctor');
+      if(doc) $('selectDoctor').value = doc.name;
+      const t = new Date(Date.now() + 24*3600*1000);
+      $('selectDate').value = t.toISOString().slice(0,10);
+      alert('Поля заполнены. Нажмите "Записаться" для подтверждения.');
+    };
+    quick.appendChild(bookBtn);
+    out.appendChild(quick);
+  }, 400);
+}
 
-/* Clear AI */
-document.getElementById('aiClear').addEventListener('click', ()=>{
-  document.getElementById('aiInput').value = '';
-  document.getElementById('aiResponse').innerHTML = '';
-});
+/* ========== Team render (photos) ========== */
+function renderTeam(){
+  const root = $('teamList');
+  root.innerHTML='';
+  STORE.users.filter(u => ['admin','doctor','patient'].includes(u.role)).forEach(u=>{
+    const div = document.createElement('div'); div.style.display='flex'; div.style.gap='10px'; div.style.alignItems='center'; div.style.marginBottom='10px';
+    const img = document.createElement('div'); img.style.width='48px'; img.style.height='48px'; img.style.borderRadius='8px';
+    if(u.photo){ img.style.backgroundImage=`url(${u.photo})`; img.style.backgroundSize='cover'; } else { img.style.background='linear-gradient(135deg,var(--accent),var(--accent-2))'; img.style.color='#04282a'; img.style.display='flex'; img.style.alignItems='center'; img.style.justifyContent='center'; img.style.fontWeight='700'; img.textContent = u.name.split(' ').map(s=>s[0]).slice(0,2).join(''); }
+    const info = document.createElement('div'); info.innerHTML = `<div style="font-weight:700">${u.name}</div><div class="small muted">${u.role}</div>`;
+    div.appendChild(img); div.appendChild(info); root.appendChild(div);
+  });
+}
 
-/* ================== THEMING & LANGUAGE (basic) ================== */
-document.getElementById('themeToggle').addEventListener('click', ()=>{
-  document.body.classList.toggle('light');
-});
-
-/* Minimal language switch: changes UI labels (expandable) */
-const DICT = {
-  ru: {
-    loginTitle:'Вход в систему',
-    book:'Записаться',
-    appointments:'Записи',
-    bonus:'Бонусы и штрафы',
-    ai:'ИИ‑помощник',
-    patient:'Пациент',
-    doctor:'Врач',
-    date:'Дата',
-    welcome:'Добро пожаловать в IBprofen'
-  },
-  en: {
-    loginTitle:'Sign in',
-    book:'Book appointment',
-    appointments:'Appointments',
-    bonus:'Bonuses & Penalties',
-    ai:'AI Assistant',
-    patient:'Patient',
-    doctor:'Doctor',
-    date:'Date',
-    welcome:'Welcome to IBprofen'
-  },
-  kz: {
-    loginTitle:'Жүйеге кіру',
-    book:'Белгілеу',
-    appointments:'Тіркелімдер',
-    bonus:'Бонус пен айыптар',
-    ai:'ИИ‑көмекші',
-    patient:'Пациент',
-    doctor:'Дәрігер',
-    date:'Күн',
-    welcome:'IBprofen-ге қош келдіңіз'
-  },
-  zh: {
-    loginTitle:'登录系统',
-    book:'预约',
-    appointments:'预约记录',
-    bonus:'奖励与罚款',
-    ai:'AI 助手',
-    patient:'患者',
-    doctor:'医生',
-    date:'日期',
-    welcome:'欢迎来到 IBprofen'
-  }
+/* ========== Admin users table ========== */
+function renderUsersTable(){
+  const tbody = document.querySelector('#usersTable tbody');
+  if(!tbody) return;
+  tbody.innerHTML='';
+  STORE.users.forEach(u=>{
+    const tr = document.createElement('tr');
+    const actions = [];
+    actions.push(`<button class="btn-ghost" onclick="editUser(${u.id})">Изм.</button>`);
+    actions.push(`<button class="btn-ghost" onclick="removeUser(${u.id})">Удал.</button>`);
+    tr.innerHTML = `<td>${u.name}</td><td>${u.login}</td><td>${u.role}</td><td>${actions.join(' ')}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+window.editUser = function(id){
+  const u = STORE.users.find(x=>x.id===id);
+  if(!u) return alert('Не найден');
+  const name = prompt('Имя', u.name);
+  if(name!==null) u.name = name;
+  const pass = prompt('Пароль (оставьте пустым чтобы не менять)');
+  if(pass) u.password = pass;
+  saveStore(STORE);
+  renderUsersTable();
+  renderTeam();
 };
-
-document.getElementById('lang').addEventListener('change', ()=>{
-  const L = document.getElementById('lang').value;
-  const d = DICT[L] || DICT['ru'];
-  // update a few labels
-  document.getElementById('bookBtn').textContent = d.book;
-  document.getElementById('appointmentsTitle').textContent = d.appointments;
-  document.getElementById('bonusTitle').textContent = d.bonus;
-  document.getElementById('aiTitle').textContent = d.ai;
-  document.getElementById('selectPatientLabel').textContent = d.patient;
-  document.getElementById('selectDoctorLabel').textContent = d.doctor;
-  document.getElementById('selectDateLabel').textContent = d.date;
-  // welcome
-  document.getElementById('welcomeTitle').textContent = d.welcome;
-});
-
-/* Help button */
-document.getElementById('helpBtn').addEventListener('click', ()=>{
-  alert('IBprofen demo\n\nИспользуйте быстрый вход, протестируйте запись и ИИ. Для реальной системы нужна серверная часть и защита данных.');
-});
-
-/* init UI */
-updateStats();
-
-/* Optional: preload demo content (generate many items for "big" feeling) */
-(function generateBulkDemo(){
-  // generate many demo appointments to make UI feel large (adjust count)
-  for(let i=0;i<60;i++){
-    generateDemoAppointments(1);
-  }
-  updateStats();
+window.removeUser = function(id){
+  if(!confirm('Удалить пользователя?')) return;
+  STORE.users = STORE.users.filter(u=>u.id!==id);
+  // clean balances and appointments for that user
+  // (for demo we'll leave balances)
+  saveStore(STORE);
+  renderUsersTable();
+  renderTeam();
+  populateSelects();
   renderAppointmentsTable();
   renderBalances();
+};
+
+/* ========== Create demo data ========== */
+function createDemoData(){
+  if(!confirm('Сгенерировать дополнительные демо записи и балансы?')) return;
+  // add 30 random appts
+  const patients = STORE.users.filter(u=>u.role==='patient').map(u=>u.name);
+  const doctors = STORE.users.filter(u=>u.role==='doctor').map(u=>u.name);
+  const today = new Date();
+  for(let i=0;i<30;i++){
+    const d = new Date(today.getTime() + (i+1)*24*3600*1000);
+    const date = d.toISOString().slice(0,10);
+    const time = ['09:00','10:00','11:00','13:00','14:00','15:00'][i%6];
+    STORE.appointments.push({id:Date.now()+i, patientName:patients[i%patients.length], doctorName:doctors[i%doctors.length], date, time, status: (i%4===0)?'Завершено':'Запланировано'});
+  }
+  // bump balances
+  STORE.users.filter(u=>u.role==='patient').forEach(p=> STORE.balances[p.name] = (STORE.balances[p.name]||0) + Math.floor(Math.random()*30));
+  saveStore(STORE);
+  populateSelects(); renderAppointmentsTable(); renderBalances(); updateStats();
+  alert('Демо данные добавлены');
+}
+
+/* ========== Stats update ========== */
+function updateStats(){
+  $('statPatients').innerText = STORE.users.filter(u=>u.role==='patient').length;
+  $('statDoctors').innerText = STORE.users.filter(u=>u.role==='doctor').length;
+  $('statAppts').innerText = STORE.appointments.length;
+}
+
+/* ========== Misc helpers ========== */
+function updateCurrentBalanceDisplay(){
+  if(CURRENT.user) $('curBalance').innerText = STORE.balances[CURRENT.user.name] ?? 0;
+}
+
+/* Initialize on load */
+initUI();
+
+/* helper to repopulate after login/register */
+function renderBalances(){ renderBalances; } // placeholder to avoid lint issues
+// but call actual function defined earlier:
+renderBalances = renderBalances; // no-op (keeps consistent)
+
+(function finishInit(){
+  populateSelects();
+  renderTeam();
+  renderUsersTable();
+  renderAppointmentsTable();
+  renderBalances();
+  updateStats();
 })();
+
+/* Language basic mapping */
+const LABELS = {
+  ru: {
+    loginTitle: 'Вход / Регистрация',
+    welcomeTitle: 'Добро пожаловать',
+    apptTitle: 'Запись к врачу',
+    aiTitle: 'ИИ‑помощник',
+    bookBtn: 'Записаться',
+    viewSched: 'Показать расписание',
+  },
+  en: {
+    loginTitle: 'Sign in / Register',
+    welcomeTitle: 'Welcome',
+    apptTitle: 'Appointment',
+    aiTitle: 'AI Assistant',
+    bookBtn: 'Book',
+    viewSched: 'Show schedule',
+  },
+  kz: {
+    loginTitle: 'Кіру / Тіркеу',
+    welcomeTitle: 'Қош келдіңіз',
+    apptTitle: 'Дәрігерге жазылу',
+    aiTitle: 'ИИ көмекші',
+    bookBtn: 'Жазылу',
+    viewSched: 'Кестені көрсету',
+  },
+  zh: {
+    loginTitle: '登录 / 注册',
+    welcomeTitle: '欢迎',
+    apptTitle: '预约',
+    aiTitle: 'AI 助手',
+    bookBtn: '预约',
+    viewSched: '显示日程',
+  }
+};
+$('uiLang').addEventListener('change', ()=>{
+  const L = $('uiLang').value;
+  const d = LABELS[L] || LABELS.ru;
+  $('loginTitle').textContent = d.loginTitle;
+  $('welcomeTitle').textContent = d.welcomeTitle;
+  $('apptTitle').textContent = d.apptTitle;
+  $('aiTitle').textContent = d.aiTitle;
+  $('bookBtn').textContent = d.bookBtn;
+  $('viewSched').textContent = d.viewSched;
+});
+
+/* Fix for renderBalances variable confusion above: define real function now */
+function renderBalances(){
+  const tbody = document.querySelector('#bonusTable tbody');
+  if(!tbody) return;
+  tbody.innerHTML='';
+  Object.keys(STORE.balances).forEach(name=>{
+    const bonuses = Math.floor(STORE.balances[name]/2);
+    const penalties = Math.floor(Math.random()*3);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${name}</td><td>${bonuses}</td><td>${penalties}</td><td>${STORE.balances[name]}</td>`;
+    tbody.appendChild(tr);
+  });
+  updateCurrentBalanceDisplay();
+}
+
+/* Ensure selects/timeSlots ready */
+populateSelects();
+renderTeam();
+updateStats();
+
+/* End of script */
 </script>
 </body>
-  </html>
+</html>
