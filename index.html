@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBprofen — Умная медсистема</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#121212;color:#fff;transition:.3s;}
+.light-mode{background:#f5f5f5;color:#000;}
+header{display:flex;justify-content:space-between;align-items:center;padding:15px 30px;background:#1a1a1a;}
+nav ul{display:flex;list-style:none;margin:0;padding:0;}
+nav li{margin-left:20px;}
+nav a{text-decoration:none;color:#c5c6c7;font-weight:bold;}
+nav a:hover{color:#66fcf1;}
+section{padding:20px;}
+input, select, textarea{padding:8px;margin:5px;border-radius:5px;border:none;width:200px;}
+button{padding:8px 12px;margin:5px;border:none;border-radius:5px;background:#66fcf1;color:#000;cursor:pointer;}
+button:hover{opacity:0.85;}
+.card{background:rgba(255,255,255,0.05);border-radius:10px;padding:10px;margin:5px;display:inline-block;width:220px;vertical-align:top;}
+</style>
+</head>
+<body>
+
+<!-- Вход -->
+<div id="login-container">
+<h2>Войти</h2>
+<input type="text" id="login" placeholder="Логин">
+<input type="password" id="password" placeholder="Пароль">
+<button onclick="login()">Войти</button>
+<div id="error-msg" style="color:red;margin-top:10px;"></div>
+</div>
+
+<!-- Основной контент -->
+<div id="main-container" style="display:none;">
+
+<header>
+<h1>IBprofen</h1>
+<nav>
+<ul>
+<li><a href="#appointments">Запись к врачу</a></li>
+<li><a href="#bonus">Бонусы/Штрафы</a></li>
+<li><a href="#ai">ИИ-помощник</a></li>
+<li><a href="#settings">Настройки</a></li>
+</ul>
+</nav>
+<button onclick="toggleTheme()">🌓 Сменить тему</button>
+<select id="language-select" onchange="changeLanguage()">
+<option value="ru">Русский</option>
+<option value="en">English</option>
+<option value="kz">Қазақша</option>
+<option value="zh">中文</option>
+</select>
+</header>
+
+<section id="appointments">
+<h2>Запись к врачу</h2>
+<div id="appointment-container"></div>
+</section>
+
+<section id="bonus">
+<h2>Бонусы и штрафы</h2>
+<div id="bonus-container"></div>
+</section>
+
+<section id="ai">
+<h2>ИИ-помощник</h2>
+<textarea id="ai-input" placeholder="Опишите симптомы или вопрос"></textarea>
+<button onclick="askAI()">Спросить ИИ</button>
+<div id="ai-response" style="margin-top:10px;"></div>
+</section>
+
+<section id="settings">
+<h2>Настройки</h2>
+<button onclick="toggleTheme()">Сменить тему</button>
+</section>
+
+</div>
+
+<script>
+// Пользователи
+const users = [
+  {role:'admin', login:'admin', password:'Jony707', name:'Довронов Жонибек'},
+  {role:'doctor', login:'doctor', password:'Imran990', name:'Наниев Имран'},
+  {role:'doctor', login:'doctor', password:'Adlet990', name:'Мәріпбек Әдлет'},
+  {role:'patient', login:'Filko', password:'Alaton1', name:'Филко Иван'},
+  {role:'patient', login:'Myrzakunurov', password:'Alaton1', name:'Мырзакунуров Арман'},
+  {role:'patient', login:'Kozhamzharova', password:'Alaton1', name:'Кожамжарова Динара'}
+];
+
+// Вход
+function login(){
+  const loginValue=document.getElementById("login").value;
+  const passwordValue=document.getElementById("password").value;
+  const user=users.find(u=>u.login===loginValue && u.password===passwordValue);
+  if(user){
+    document.getElementById("login-container").style.display="none";
+    document.getElementById("main-container").style.display="block";
+    initApp(user);
+  }else{
+    document.getElementById("error-msg").innerText="Неверный логин или пароль!";
+  }
+}
+
+// Инициализация приложения
+function initApp(user){
+  initAppointments(user);
+  initBonus(user);
+  initAI();
+}
+
+// Темная/светлая тема
+function toggleTheme(){
+  document.body.classList.toggle("light-mode");
+}
+
+// Запись к врачу
+function initAppointments(user){
+  const container=document.getElementById("appointment-container");
+  const doctors=users.filter(u=>u.role==='doctor');
+  doctors.forEach(doc=>{
+    const btn=document.createElement("button");
+    btn.innerText=`Записаться к ${doc.name}`;
+    btn.onclick=()=>alert(`Пациент ${user.name} записан к врачу ${doc.name}`);
+    container.appendChild(btn);
+  });
+}
+
+// Бонусы и штрафы
+function initBonus(user){
+  const container=document.getElementById("bonus-container");
+  for(let i=1;i<=5;i++){
+    const btn=document.createElement("button");
+    btn.innerText=`Бонус/штраф ${i} для ${user.name}`;
+    btn.onclick=()=>alert(`Обновлен бонус/штраф ${i} для ${user.name}`);
+    container.appendChild(btn);
+  }
+}
+
+// ИИ-помощник
+function initAI(){
+  // здесь можно подключить реальный API, пока простой пример
+  window.askAI=function(){
+    const input=document.getElementById("ai-input").value;
+    const response=document.getElementById("ai-response");
+    response.innerText=`ИИ отвечает: на основе вашего ввода "${input}" рекомендуется обратиться к врачу.`;
+  }
+}
+
+// Мультиязычность (демо)
+function changeLanguage(){
+  const lang=document.getElementById("language-select").value;
+  alert(`Выбран язык: ${lang} (здесь можно перевести весь интерфейс)`);
+}
+</script>
+
+</body>
+</html>
